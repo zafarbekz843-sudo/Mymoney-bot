@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mening Xarajatlarim</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Bosh sahifa -->
+  <section id="view-home" class="view active">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <p class="greeting">👋 Xush kelibsiz</p>
+          <h1>Mening Xarajatlarim</h1>
+        </div>
+      </div>
+      <div class="balance-card">
+        <p class="balance-label">Umumiy balans</p>
+        <h2 id="balance-amount">0 so'm</h2>
+        <div class="balance-split">
+          <div><span class="dot income"></span>Daromad <b id="income-amount">0 so'm</b></div>
+          <div><span class="dot expense"></span>Xarajat <b id="expense-amount">0 so'm</b></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="mini-stats">
+      <div class="mini-stat">
+        <p>Bugungi xarajat</p>
+        <b id="today-expense">0 so'm</b>
+      </div>
+      <div class="mini-stat" id="limit-card">
+        <p>Oylik limit</p>
+        <b id="limit-amount">Belgilanmagan</b>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h3>🎯 Jamg'armalar</h3>
+      <button class="link-btn" id="add-saving-btn">+ Yangi</button>
+    </div>
+    <div id="savings-list" class="savings-list"></div>
+
+    <div class="section-head">
+      <h3>🕒 So'nggi amallar</h3>
+    </div>
+    <div id="recent-list" class="tx-list"></div>
+  </section>
+
+  <!-- Tarix -->
+  <section id="view-history" class="view">
+    <div class="section-head sticky-head">
+      <h3>Barcha amallar</h3>
+    </div>
+    <div id="full-tx-list" class="tx-list"></div>
+  </section>
+
+  <!-- Statistika -->
+  <section id="view-stats" class="view">
+    <div class="section-head sticky-head"><h3>📊 Statistika</h3></div>
+    <div class="stats-card">
+      <p>Shu oylik xarajat</p>
+      <h2 id="month-expense">0 so'm</h2>
+    </div>
+    <div class="section-head"><h3>Kategoriya bo'yicha</h3></div>
+    <div id="category-breakdown" class="category-breakdown"></div>
+  </section>
+
+  <!-- Sozlamalar -->
+  <section id="view-settings" class="view">
+    <div class="section-head sticky-head"><h3>👤 Profil / Sozlamalar</h3></div>
+
+    <div class="settings-card">
+      <p class="settings-label">🎯 Oylik xarajat limiti</p>
+      <div class="limit-form">
+        <input type="number" id="limit-input" placeholder="Masalan: 2000000" inputmode="numeric">
+        <label class="switch">
+          <input type="checkbox" id="limit-enabled">
+          <span>Nazoratni yoqish</span>
+        </label>
+        <button class="primary-btn" id="save-limit-btn">Saqlash</button>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <p class="settings-label">🤖 AI moliyaviy yordamchi</p>
+      <p class="settings-hint">Botga istalgan savolni yozing — masalan "bu oy qancha sarfladim?" — AI sizning yozuvlaringiz asosida javob beradi.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- Pastki navigatsiya -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-view="home"><span>🏠</span>Uy</button>
+  <button class="nav-btn" data-view="history"><span>🧾</span>Tarix</button>
+  <button class="nav-btn add-btn" id="add-tx-btn"><span>+</span></button>
+  <button class="nav-btn" data-view="stats"><span>📊</span>Statistika</button>
+  <button class="nav-btn" data-view="settings"><span>👤</span>Profil</button>
+</nav>
+
+<!-- Xarajat/daromad qo'shish modali -->
+<div class="modal-overlay" id="tx-modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Amal qo'shish</h3>
+      <button class="close-btn" data-close="tx-modal-overlay">×</button>
+    </div>
+    <div class="type-toggle">
+      <button class="type-btn expense active" data-type="expense">↓ Xarajat</button>
+      <button class="type-btn income" data-type="income">↑ Daromad</button>
+    </div>
+    <input type="number" id="tx-amount" placeholder="Summa (so'm)" inputmode="numeric">
+    <select id="tx-category"></select>
+    <input type="text" id="tx-comment" placeholder="Izoh (ixtiyoriy)">
+    <button class="primary-btn" id="tx-save-btn">Saqlash</button>
+  </div>
+</div>
+
+<!-- Jamg'arma qo'shish modali -->
+<div class="modal-overlay" id="saving-modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Yangi jamg'arma</h3>
+      <button class="close-btn" data-close="saving-modal-overlay">×</button>
+    </div>
+    <input type="text" id="saving-name" placeholder="Maqsad nomi (masalan: Telefon)">
+    <input type="number" id="saving-goal" placeholder="Maqsad summasi (so'm)" inputmode="numeric">
+    <button class="primary-btn" id="saving-save-btn">Yaratish</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
